@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado y Gestión de Productos</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Listado de Productos</h2>
+        <!-- Botón para abrir modal de agregar nuevo producto -->
+        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalProducto">Agregar Producto</button>
+
+        <!-- Tabla para listar productos -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Ejemplo de fila de producto -->
+                <tr>
+                    <td>1</td>
+                    <td>Producto A</td>
+                    <td>$50.00</td>
+                    <td>100</td>
+                    <td>
+                        <!-- Botones para editar y eliminar producto -->
+                        <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#modalProducto">Editar</button>
+                        <button class="btn btn-sm btn-danger ml-2" onclick="eliminarProducto()">Eliminar</button>
+                    </td>
+                </tr>
+                <!-- Fin del ejemplo -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para crear/editar producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1" role="dialog" aria-labelledby="modalProductoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalProductoLabel">Agregar Producto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProductoModal">
+                        <div class="form-group">
+                            <label for="nombreProducto">Nombre</label>
+                            <input type="text" class="form-control" id="nombreProducto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="precioProducto">Precio</label>
+                            <input type="number" step="0.01" class="form-control" id="precioProducto" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stockProducto">Stock</label>
+                            <input type="number" class="form-control" id="stockProducto" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="guardarProducto()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y script personalizado -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Función para cargar datos en el modal de editar producto
+        function editarProducto() {
+            // Implementa aquí la lógica para cargar datos del producto en el modal
+            // Por ejemplo, puedes establecer los valores de los campos del formulario modal
+            document.getElementById('modalProductoLabel').textContent = 'Editar Producto';
+        }
+
+        // Función para guardar un nuevo producto o editar un producto existente
+        function guardarProducto() {
+            // Implementa aquí la lógica para guardar o editar el producto
+            alert('Implementar función para guardar/editar producto');
+            // Luego puedes cerrar el modal y actualizar la tabla de productos si es necesario
+            $('#modalProducto').modal('hide');
+        }
+
+        // Función para eliminar un producto (implementación en tu lógica)
+        function eliminarProducto() {
+            // Implementa aquí la lógica para eliminar el producto
+            alert('Implementar función para eliminar producto');
+        }
+
+        // Evento cuando el modal se muestra
+        $('#modalProducto').on('shown.bs.modal', function () {
+            // Aquí puedes realizar acciones adicionales cuando el modal se muestra
+            // Por ejemplo, cargar datos si es para editar un producto existente
+            editarProducto();
+        });
+
+        // Evento cuando el modal se cierra
+        $('#modalProducto').on('hidden.bs.modal', function () {
+            // Aquí puedes realizar acciones adicionales cuando el modal se cierra
+            // Por ejemplo, limpiar el formulario
+            document.getElementById('formProductoModal').reset();
+            document.getElementById('modalProductoLabel').textContent = 'Agregar Producto'; // Restaurar título del modal
+        });
+    </script>
+</body>
+</html>
