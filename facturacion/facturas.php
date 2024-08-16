@@ -27,7 +27,7 @@
                     <a class="nav-link" href="../productos/producto.php">Listado de Productos</a>
                 </li>
                 <li class="nav-item" id="facturas">
-                    <a class="nav-link" href="/facturas.php">Listado de Facturas</a>
+                    <a class="nav-link" href="../facturacion/facturas.php">Listado de Facturas</a>
                 </li>
             </ul>
         </div>
@@ -50,27 +50,27 @@
             </thead>
             <tbody>
                 <?php
-                // Conexión a la base de datos (reemplaza con tus datos de conexión)
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "factura";
+                // Conexión base de datos
+                $servername = "sql208.infinityfree.com";
+                $username = "if0_37068684";
+                $password = "QDDMXbjIIptT3u";
+                $dbname = "if0_37068684_facturacion";
 
-                // Crear conexión
+
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
-                // Verificar conexión
+
                 if ($conn->connect_error) {
                     die("Conexión fallida: " . $conn->connect_error);
                 }
-                // Consulta para obtener las facturas
+                $conn->set_charset("utf8");
+
                 $sql = "SELECT f.ID_Factura, f.Fecha, c.Nombre, f.Total,f.NumeroFactura
                 FROM Facturas f 
                 JOIN Clientes c ON f.ID_Cliente = c.ID_Cliente
                 WHERE f.Activo = TRUE"; // Solo obtener facturas activas
                 $result = $conn->query($sql);
 
-                // Mostrar datos de clientes en la tabla
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
@@ -108,7 +108,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario para crear una nueva factura -->
+                    <!-- Formulario para crear  -->
                     <form id="formCrearFactura">
                         <div class="form-row">
                             <input type="hidden" id="idCliente" name="idCliente">
@@ -159,14 +159,6 @@
                                     <label for="cantidad1">Cantidad</label>
                                     <input type="number" class="form-control" min="1" value="1" id="cantidad1" required>
                                 </div>
-                                <!-- <div class="col">
-                                    <label for="formaPago">Forma de Pago:</label>
-                                    <select id="formaPago" class="form-control" name="formaPago" required>
-                                        <option value="efectivo">Efectivo</option>
-                                        <option value="tarjeta">Tarjeta de Crédito</option>
-                                    </select>
-                                </div> -->
-
                             </div>
                         </div>
                         <button type="button" class="btn btn-primary btn-sm mb-3" onclick="agregarProducto()">Agregar
@@ -193,16 +185,16 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!-- Formulario para Editar una nueva factura -->
+                    <!-- Formulario para Editar  -->
                     <form id="formEditarFactura">
                         <div class="form-row">
                             <input type="hidden" id="idClienteEditar" name="idClienteEditar">
                             <div class="form-group col-md-6">
                                 <label for="cedulaEditar">Cédula</label>
                                 <input type="text" class="form-control" id="cedulaEditar" required maxlength="10">
-                                <button type="button" class="btn btn-primary mt-2" onclick="buscarCliente()">Buscar
+                                <button type="button" class="btn btn-primary mt-2" onclick="buscarEditar()">Buscar
                                     Cliente Editar</button>
-                                <div id="resultadoBusqueda"></div>
+                                <div id="resultadoBusquedaS"></div>
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="nombreEditar">Nombre del Cliente</label>
@@ -267,7 +259,7 @@
         </div>
     </div>
 
-    <!-- Modal para ver detalles de factura -->
+    <!-- Modal para ver detalles de factura.... -->
     <div class="modal fade" id="modalDetallesFactura" tabindex="-1" role="dialog"
         aria-labelledby="modalDetallesFacturaLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -323,7 +315,7 @@
                             </div>
                         </div>
                     </form>
-                    <!-- Tabla de detalles de productos -->
+                    <!-- Tabla de detalles de productos.... -->
                     <table class="table">
                         <thead>
                             <tr>
@@ -334,7 +326,7 @@
                             </tr>
                         </thead>
                         <tbody id="detalleProductos">
-                            <!-- Los detalles se agregarán dinámicamente aquí -->
+
                         </tbody>
                     </table>
                 </div>
@@ -352,8 +344,39 @@
     <script>
 
         let productoCount = [];
+        // Función para buscar un cliente por cédula....
+        function buscarCliente() {
+            const cedula = document.getElementById('cedulaCliente').value;
 
-        // Función para cargar los datos de la factura en el modal de edición
+            const formData = new URLSearchParams();
+            formData.append('cedula', cedula);
+
+            fetch('buscar_cliente.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        alert('invalido');
+                        throw new Error('invalido');
+                    }
+                    return response.json();
+                })
+                .then(cliente => {
+                    // Actualizar los campos del formulario con los datos del cliente encontrado
+                    document.getElementById('idCliente').value = cliente.ID_Cliente;
+                    document.getElementById('nombreCliente').value = cliente.Nombre;
+                    document.getElementById('telefonoCliente').value = cliente.Telefono;
+                    document.getElementById('direccionCliente').value = cliente.Direccion;
+                    document.getElementById('emailCliente').value = cliente.Email;
+                })
+                .catch(error => {
+                    console.error('Error al buscar cliente:', error);
+                    // Mostrar mensaje de error al usuario (cliente no encontrado)....
+                    alert('Cliente no encontrado, por favor ingrese la cedula correcta o verifique si el cliente existe');
+                });
+        }
+        // Función para cargar los datos de la factura en el modal de edición...
         function editarFactura(ID_Factura) {
             fetch(`onbtenerdetalleseditar.php?id_factura=${ID_Factura}`)
                 .then(response => {
@@ -363,7 +386,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Llenar los campos del formulario de edición con los datos obtenidos
+                    // Llenar los campos del formulario de edición con los datos obtenidos....
                     document.getElementById('cedulaEditar').value = data.cedula;
                     document.getElementById('formaPagoEditar').value = data.forma;
                     document.getElementById('nombreEditar').value = data.cliente;
@@ -371,7 +394,7 @@
                     document.getElementById('direccionEditar').value = data.direccion;
                     document.getElementById('emailEditar').value = data.email;
 
-                    // Limpiar y llenar la tabla de productos en el modal de edición
+                    // Limpiar y llenar la tabla de productos en el modal de edición....
                     document.getElementById('productos').innerHTML = ''; // Limpiar productos existentes
                     data.productos.forEach(producto => {
                         const nuevoProductoRow = document.createElement('div');
@@ -392,7 +415,7 @@
                         document.getElementById('productos').appendChild(nuevoProductoRow);
                     });
 
-                    // Mostrar el modal de edición de factura
+                    // Mostrar el modal de editar factura....
                     $('#modalEditarFactura').modal('show');
 
                 })
@@ -401,40 +424,7 @@
                     alert('Error al obtener detalles de la factura');
                 });
         }
-
-        // Función para buscar un cliente por cédula
-        function buscarCliente() {
-            const cedula = document.getElementById('cedulaCliente').value;
-
-            const formData = new URLSearchParams();
-            formData.append('cedula', cedula);
-
-            fetch('buscar_cliente.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Cliente no encontrado, por favor ingrese la cedula correcta o verifique si el cliente existe');
-                    }
-                    return response.json();
-                })
-                .then(cliente => {
-                    // Actualizar los campos del formulario con los datos del cliente encontrado
-                    document.getElementById('idCliente').value = cliente.ID_Cliente;
-                    document.getElementById('nombreCliente').value = cliente.Nombre;
-                    document.getElementById('telefonoCliente').value = cliente.Telefono;
-                    document.getElementById('direccionCliente').value = cliente.Direccion;
-                    document.getElementById('emailCliente').value = cliente.Email;
-                })
-                .catch(error => {
-                    console.error('Error al buscar cliente:', error);
-                    // Mostrar mensaje de error al usuario (cliente no encontrado)
-                    alert('Cliente no encontrado, por favor ingrese la cedula correcta o verifique si el cliente existe');
-                });
-        }
-
-        // Función para cargar productos desde el servidor
+        // Función para cargar productos....
         function cargarProductos() {
             fetch('cargar_productos.php')
                 .then(response => {
@@ -444,7 +434,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Limpiar selectores existentes antes de agregar nuevos
                     document.querySelectorAll('.producto-select').forEach(select => {
                         select.innerHTML = '';
                         data.forEach(producto => {
@@ -460,9 +449,9 @@
                 });
         }
 
-        // Función para agregar un nuevo campo de producto al formulario
+        // Función para agregar un nuevo campo de producto al formulario...
         function agregarProducto() {
-            productoCount++; // Incrementar el contador de productos
+            productoCount++; // Incrementar el contador de productos...
 
             const nuevoProductoRow = document.createElement('div');
             nuevoProductoRow.classList.add('form-row', 'align-items-center', 'mb-2');
@@ -482,12 +471,15 @@
      
         `;
             document.getElementById('productos').appendChild(nuevoProductoRow);
-            cargarProductos(); // Cargar opciones de productos en el nuevo select
+            cargarProductos(); // Cargar opciones de productos en el nuevo select...
         }
 
-        // Cargar productos al cargar la página
+        // Cargar productos al cargar la página...
         cargarProductos();
 
+
+
+        //SIMULADPR ACTUALIZAR...
         function guardarFacturaEditada() {
             alert('simulador! La factura se actualizo');
             return;
@@ -495,41 +487,55 @@
 
         function guardarFactura() {
             const idCliente = document.getElementById('idCliente').value;
-            const totalFactura = calcularTotalFactura(); // Calcula el total de la factura
-            const fechaActual = obtenerFechaActual(); // Obtén la fecha actual
+            const totalFactura = calcularTotalFactura(); // Calcula el total de la factura...
+            const fechaActual = obtenerFechaActual(); // Obtén la fecha actual...
             const formaPago = document.getElementById('formaPago').value;
-            // Validar que los campos obligatorios estén llenos
+
             if (!idCliente) {
                 alert('Por favor, busque un cliente válido.');
                 return;
             }
 
-            // Obtener detalles de productos
             const productos = [];
             const productosRows = document.querySelectorAll('#productos .form-row');
+
             productosRows.forEach((row, index) => {
                 const productoSelect = row.querySelector('.producto-select');
                 const cantidadInput = row.querySelector('input[type="number"]');
-                const precioUnitario = parseFloat(productoSelect.options[productoSelect.selectedIndex].text.split('$')[1]);
+
                 const idProducto = productoSelect.value;
                 const cantidad = parseInt(cantidadInput.value);
+                const precioUnitario = parseFloat(productoSelect.options[productoSelect.selectedIndex].text.split('$')[1]);
 
-                productos.push({
-                    idProducto: idProducto,
-                    cantidad: cantidad,
-                    precio: precioUnitario
-                });
+                // Verifica que el producto sea válido y no es el default (ID 1)...
+                if (idProducto && idProducto != 1 && cantidad > 0) {
+                    productos.push({
+                        idProducto: idProducto,
+                        cantidad: cantidad,
+                        precio: precioUnitario
+                    });
+                }
             });
+
+            console.log('Productos seleccionados:', productos);
+
+            // Verifica que haya productos seleccionados válidos...
+            if (productos.length === 0) {
+                alert("Debes seleccionar al menos un producto.");
+                return;
+            }
 
             const factura = {
                 idCliente: idCliente,
                 fecha: fechaActual,
                 total: totalFactura,
-                pago: formaPago, // Añadir la forma de pago
+                pago: formaPago,
                 productos: productos
             };
 
-            fetch('guardarFactura.php', {
+            console.log('Factura a enviar:', factura);
+
+            fetch('guardar_factura.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -537,6 +543,7 @@
                 body: JSON.stringify(factura),
             })
                 .then(response => {
+                    console.log('Response:', response);
                     if (!response.ok) {
                         throw new Error('Error al guardar la factura');
                     }
@@ -545,17 +552,17 @@
                 .then(data => {
                     alert('Factura guardada correctamente');
                     console.log('Factura guardada correctamente:', data);
-                    // Limpiar formulario después de guardar
                     document.getElementById('formCrearFactura').reset();
-                    // Cerrar modal
                     $('#modalCrearFactura').modal('hide');
                     location.reload();
                 })
                 .catch(error => {
-                    console.error('Error al guardar la factura:', error);
-                    alert('Error al guardar la factura');
+                    console.error('Error al guardar la factura:', error.message);
+                    alert('Error al guardar la factura. Por favor, revisa la consola para más detalles.');
                 });
         }
+
+
 
         function calcularTotalFactura() {
             let totalFactura = 0;
@@ -572,7 +579,7 @@
             return totalFactura;
         }
 
-        // Función para obtener la fecha actual en formato YYYY-MM-DD
+        // Función para obtener la fecha actual en formato YYYY-MM-DD...
         function obtenerFechaActual() {
             const today = new Date();
             const dd = String(today.getDate()).padStart(2, '0');
@@ -592,22 +599,22 @@
                 })
                 .then(data => {
                     // Llenar los campos del formulario con los datos obtenidos
-                    document.getElementById('infoCedula').value = data.cedula;
-                    document.getElementById('infoCliente').value = data.cliente;
-                    document.getElementById('infoEmail').value = data.email;
-                    document.getElementById('infoTelefono').value = data.telefono;
-                    document.getElementById('infoFecha').value = data.fecha;
-                    document.getElementById('infoDirecion').value = data.direccion;
-                    document.getElementById('infoPago').value = data.forma;
-                    document.getElementById('infoFactura').value = '# ' + data.facturaN;
+                    document.getElementById('infoCedula').value = data.cedula || 'No disponible';
+                    document.getElementById('infoCliente').value = data.cliente || 'No disponible';
+                    document.getElementById('infoEmail').value = data.email || 'No disponible';
+                    document.getElementById('infoTelefono').value = data.telefono || 'No disponible';
+                    document.getElementById('infoFecha').value = data.fecha || 'No disponible';
+                    document.getElementById('infoDirecion').value = data.direccion || 'No disponible';
+                    document.getElementById('infoPago').value = data.forma || 'No disponible';
+                    document.getElementById('infoFactura').value = '# ' + (data.facturaN || 'No disponible');
 
-                    // Limpiar y llenar la tabla de detalles de productos
+                    // Limpiar y llenar la tabla de detalles de productos..
                     const detalleProductos = document.getElementById('detalleProductos');
                     detalleProductos.innerHTML = '';
 
-                    let totalFactura = 0; // Variable para calcular el total de la factura
+                    let totalFactura = 0; // Variable para calcular el total de la factura...
 
-                    // Construir filas de detalles de productos
+                    // Construir filas de detalles de productos....
                     data.productos.forEach(producto => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
@@ -618,11 +625,11 @@
                 `;
                         detalleProductos.appendChild(row);
 
-                        // Sumar al total de la factura
+                        // Sumar al total de la factura.....
                         totalFactura += producto.Cantidad * producto.Precio;
                     });
 
-                    // Crear una fila para mostrar el total
+                    // Crear una fila para mostrar el total....
                     const totalRow = document.createElement('tr');
                     totalRow.innerHTML = `
                 <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
@@ -630,7 +637,7 @@
             `;
                     detalleProductos.appendChild(totalRow);
 
-                    // Mostrar el modal de detalles de factura
+                    // Mostrar el modal de detalles de factura....
                     $('#modalDetallesFactura').modal('show');
                 })
                 .catch(error => {
@@ -675,7 +682,7 @@
                 },
                 margin: { top: 10 },
                 bodyStyles: {
-                    cellPadding: 2 // Reduce the cell padding to make rows closer
+                    cellPadding: 2 // // Reduce el relleno de la celda para acercar las filas...
                 }
             });
 
@@ -716,22 +723,22 @@
             cargarProductos();
         });
 
-    // Obtener la ruta actual de la URL
-    var path = window.location.pathname;
+        // Obtener la ruta actual de la URL...
+        var path = window.location.pathname;
 
-    // Limpiar el estado 'active' de todos los elementos
-    document.querySelectorAll('.nav-item').forEach(function(navItem) {
-        navItem.classList.remove('active');
-    });
+        // Limpiar el estado 'active' de todos los elementos....
+        document.querySelectorAll('.nav-item').forEach(function (navItem) {
+            navItem.classList.remove('active');
+        });
 
-    // Basado en la ruta, asignar la clase 'active' al elemento correspondiente
-    if (path.endsWith("/cliente/cliente.php")) {
-        document.getElementById("clientes").classList.add("active");
-    } else if (path.endsWith("/productos/producto.php")) {
-        document.getElementById("product").classList.add("active");
-    } else if (path.endsWith("/facturas.php")) {
-        document.getElementById("facturas").classList.add("active");
-    }
+        // Basado en la ruta, asignar la clase 'active' al elemento correspondiente...
+        if (path.endsWith("/cliente/cliente.php")) {
+            document.getElementById("clientes").classList.add("active");
+        } else if (path.endsWith("/productos/producto.php")) {
+            document.getElementById("product").classList.add("active");
+        } else if (path.endsWith("/facturacion/facturas.php")) {
+            document.getElementById("facturas").classList.add("active");
+        }
     </script>
     <!-- Bootstrap JS y script personalizado -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -1,24 +1,35 @@
 <?php
-// Conexión a la base de datos
-$conexion = new mysqli('sql208.infinityfree.com', 'if0_37068684', 'QDDMXbjIIptT3u', 'if0_37068684_facturacion');
+
+$servername = "sql208.infinityfree.com";
+$username = "if0_37068684";
+$password = "QDDMXbjIIptT3u";
+$dbname = "if0_37068684_facturacion";
 
 
+$conexion = new mysqli($servername, $username, $password, $dbname);
 
-// Verificar conexión
+
 if ($conexion->connect_error) {
     die("Conexión fallida: " . $conexion->connect_error);
 }
+$conexion->set_charset("utf8");
 
 // Obtener datos de la solicitud POST
 $data = json_decode(file_get_contents('php://input'), true);
+
+error_log('Datos recibidos: ' . print_r($data, true));
+
 $idCliente = $data['idCliente'];
 $fecha = $data['fecha'];
 $total = $data['total'];
-$pago = $data['pago']; // Obtener el método de pago
-$productos = $data['productos']; // Array de productos
+$pago = $data['pago'];
+$productos = $data['productos'];
+
+error_log('Productos a insertar: ' . print_r($productos, true));
 
 // Función para obtener el siguiente número de factura secuencial
-function obtenerSiguienteNumeroFactura($conexion) {
+function obtenerSiguienteNumeroFactura($conexion)
+{
     $query = "SELECT MAX(NumeroFactura) AS max_numero FROM Facturas";
     $result = $conexion->query($query);
 
@@ -27,7 +38,7 @@ function obtenerSiguienteNumeroFactura($conexion) {
         $max_numero = $row['max_numero'];
 
         if ($max_numero !== null) {
-            $siguiente_numero = (int)$max_numero + 1;
+            $siguiente_numero = (int) $max_numero + 1;
         } else {
             $siguiente_numero = 100;
         }
@@ -41,22 +52,26 @@ function obtenerSiguienteNumeroFactura($conexion) {
 // Obtener el siguiente número de factura
 $numeroFactura = obtenerSiguienteNumeroFactura($conexion);
 
-// Insertar la nueva factura en la tabla Facturas
+
 $sql = $conexion->prepare("INSERT INTO Facturas (ID_Cliente, Fecha, Total, NumeroFactura, MetodoPago) VALUES (?, ?, ?, ?, ?)");
 $sql->bind_param("isdis", $idCliente, $fecha, $total, $numeroFactura, $pago);
 
 if ($sql->execute()) {
-    $idFactura = $conexion->insert_id; // Obtener el ID de la factura insertada
+    $idFactura = $conexion->insert_id;
 
     // Insertar cada producto en la tabla Detalles_Factura
     foreach ($productos as $producto) {
         $idProducto = $producto['idProducto'];
         $cantidad = $producto['cantidad'];
         $precio = $producto['precio'];
+        error_log("Insertando producto ID: $idProducto, Cantidad: $cantidad, Precio: $precio");
 
-        $sqlDetalle = $conexion->prepare("INSERT INTO Detalles_Factura (ID_Factura, ID_Producto, Cantidad, Precio) VALUES (?, ?, ?, ?)");
-        $sqlDetalle->bind_param("iiid", $idFactura, $idProducto, $cantidad, $precio);
-        $sqlDetalle->execute();
+
+        if ($idProducto && $cantidad > 0 && $precio > 0) {
+            $sqlDetalle = $conexion->prepare("INSERT INTO Detalles_Factura (ID_Factura, ID_Producto, Cantidad, Precio) VALUES (?, ?, ?, ?)");
+            $sqlDetalle->bind_param("iiid", $idFactura, $idProducto, $cantidad, $precio);
+            $sqlDetalle->execute();
+        }
     }
 
     $respuesta = array('mensaje' => 'Factura guardada exitosamente.');

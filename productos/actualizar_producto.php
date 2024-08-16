@@ -1,5 +1,5 @@
 <?php
-// Conexión a la base de datos (reemplaza con tus datos de conexión)
+
 $servername = "sql208.infinityfree.com";
 $username = "if0_37068684";
 $password = "QDDMXbjIIptT3u";
@@ -15,7 +15,7 @@ if ($conn->connect_error) {
 $idProducto = $_POST['idProducto'];
 $nombre = $_POST['nombre'];
 $precio = $_POST['precio'];
-// Preparar y ejecutar consulta SQL para actualizar cliente
+
 $sql = "UPDATE productos SET  Nombre='$nombre', Precio='$precio' WHERE ID_Producto='$idProducto'";
 
 if ($conn->query($sql) === TRUE) {

@@ -1,18 +1,18 @@
 <?php
-// Conexión a la base de datos
+
 $servername = "sql208.infinityfree.com";
 $username = "if0_37068684";
 $password = "QDDMXbjIIptT3u";
 $dbname = "if0_37068684_facturacion";
 
-// Crear conexión
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Verificar conexión
+
 if ($conn->connect_error) {
     die("Conexión fallida: " . $conn->connect_error);
 }
-
+$conn->set_charset("utf8");
 // Obtener el ID de factura enviado por el método GET
 $ID_Factura = isset($_GET['id_factura']) ? intval($_GET['id_factura']) : 0;
 
@@ -53,19 +53,19 @@ if ($result->num_rows > 0) {
 
 
     while ($row = $result->fetch_assoc()) {
-        // Procesar cada fila y asignar valores
-  
+        // Procesar cada fila y asignar valores...
+
         if ($cliente === '') {
             $cliente = $row['Cliente'];
             $cedula = $row['Cedula'];
             $email = $row['Email'];
             $telefono = $row['Telefono'];
             $direccion = $row['Direccion'];
-            $forma=$row['MetodoPago'];
+            $forma = $row['MetodoPago'];
             // $facturaN =$row['NumeroFactura'];
 
         }
-        
+
 
         $producto = array(
             'Nombre' => $row['Nombre'],
@@ -75,10 +75,10 @@ if ($result->num_rows > 0) {
         $productos[] = $producto;
     }
 
-    // Devolver los detalles de la factura en formato JSON
-    echo json_encode(array('forma' => $forma, 'cliente' => $cliente, 'cedula' => $cedula, 'email' => $email, 'direccion' => $direccion, 'telefono' => $telefono,  'productos' => $productos));
+    // Devolver los detalles de la factura en formato JSON...
+    echo json_encode(array('forma' => $forma, 'cliente' => $cliente, 'cedula' => $cedula, 'email' => $email, 'direccion' => $direccion, 'telefono' => $telefono, 'productos' => $productos));
 } else {
-    // Devolver un array vacío si no se encuentran productos
+    // Devolver un array vacío si no se encuentran productos...
     echo json_encode(array('error' => 'No se encontraron productos para la factura'));
 }
 

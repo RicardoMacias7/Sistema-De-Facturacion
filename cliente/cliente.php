@@ -25,18 +25,16 @@
                     <a class="nav-link" href="../productos/producto.php">Listado de Productos</a>
                 </li>
                 <li class="nav-item" id="facturas">
-                    <a class="nav-link" href="/facturas.php">Listado de Facturas</a>
+                    <a class="nav-link" href="../facturacion/facturas.php">Listado de Facturas</a>
                 </li>
             </ul>
         </div>
     </nav>
     <div class="container mt-4">
         <h2>Listado de Clientes</h2>
-        <!-- Botón para abrir modal de agregar nuevo cliente -->
         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalCrearCliente">Agregar
             Cliente</button>
 
-        <!-- Tabla para listar clientes -->
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -50,25 +48,26 @@
             </thead>
             <tbody>
                 <?php
-                // Conexión a la base de datos (reemplaza con tus datos de conexión) -->
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "factura";
 
-                // Crear conexión -->
+                $servername = "sql208.infinityfree.com";
+                $username = "if0_37068684";
+                $password = "QDDMXbjIIptT3u";
+                $dbname = "if0_37068684_facturacion";
+
+
+
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
-                // Verificar conexión -->
+
                 if ($conn->connect_error) {
                     die("Conexión fallida: " . $conn->connect_error);
                 }
+                $conn->set_charset("utf8");
 
-                // Consulta SQL para obtener los clientes -->
                 $sql = "SELECT ID_Cliente, Cedula, Nombre, Direccion, Telefono, Email FROM Clientes WHERE Activo = TRUE";
                 $result = $conn->query($sql);
 
-                // Mostrar datos de clientes en la tabla -->
+
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
@@ -78,7 +77,7 @@
                         echo "<td>" . $row["Telefono"] . "</td>";
                         echo "<td>" . $row["Email"] . "</td>";
                         echo '<td>
-                                <button class="btn btn-info" data-toggle="modal" data-target="#modalCliente" onclick="cargarDatosEditar(' . $row["ID_Cliente"] . ')">Editar</button>
+                                <button class="btn btn-info" data-toggle="modal" data-target="#modalEditarCliente" onclick="cargarDatosEditar(' . $row["ID_Cliente"] . ')">Editar</button>
                                 <button class="btn btn-danger ml-2" onclick="eliminarCliente(' . $row["ID_Cliente"] . ')">Eliminar</button>
                               </td>';
                         echo "</tr>";
@@ -87,10 +86,9 @@
                     echo "<tr><td colspan='6'>No se encontraron clientes</td></tr>";
                 }
 
-                // Cerrar conexión -->
                 $conn->close();
                 ?>
-                <!-- Fin del ejemplo -->
+
             </tbody>
         </table>
     </div>
@@ -175,22 +173,19 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="actualizarCliente()">Actualizar</button>
+                    <!-- <button type="button" class="btn btn-primary" onclick="actualizarCliente()">Actualizar</button>-->
+                    <button type="button" class="btn btn-primary"
+                        onclick="actualizarClienteSimilacion()">Actualizar</button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    <!-- Bootstrap JS y script personalizado -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
-        // Función para cargar datos en el modal de editar cliente
+
         function cargarDatosEditar(idCliente) {
-            // Puedes realizar una petición AJAX para obtener los datos del cliente según su ID
-            // Aquí se simula la carga de datos (reemplaza con tu lógica real)
             const url = `obtener_cliente.php?id=${idCliente}`;
 
             fetch(url)
@@ -205,11 +200,30 @@
                     document.getElementById('emailEditar').value = data.Email;
                 })
                 .catch(error => console.error('Error:', error));
+
             // Mostrar el modal de editar cliente
             $('#modalEditarCliente').modal('show');
         }
 
-        // Función para guardar un nuevo cliente
+
+        //         // Evento cuando el modal se muestra
+        // $('#modalCliente').on('shown.bs.modal', function () {
+        //     // Aquí puedes realizar acciones adicionales cuando el modal se muestra
+        //     // Por ejemplo, cargar datos si es para editar un cliente existente
+
+        // });
+
+        // // Evento cuando el modal se cierra
+        // $('#modalCliente').on('hidden.bs.modal', function () {
+        //     // Aquí puedes realizar acciones adicionales cuando el modal se cierra
+        //     // Por ejemplo, limpiar el formulario
+        //     document.getElementById('formClienteModal').reset();
+
+        // });
+
+
+
+        // Función para guardar un nuevo cliente...
         function guardarCliente() {
             const cedula = document.getElementById('cedulaCrear').value.trim();
             const nombre = document.getElementById('nombreCrear').value.trim();
@@ -230,7 +244,7 @@
             formData.append('telefono', telefono);
             formData.append('email', email);
 
-            // Enviar datos mediante AJAX
+
             fetch('guardar_cliente.php', {
                 method: 'POST',
                 body: formData
@@ -240,12 +254,12 @@
                     alert('Cliente creado exitosamente.');
                     $('#modalCrearCliente').modal('hide');
                     location.reload();
-                    // Puedes recargar la tabla de clientes o realizar alguna acción adicional aquí
+                    // Puedes recargar la tabla de clientes o realizar alguna acción adicional aquí...
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-        // Función para actualizar un cliente existente
+        // Función para actualizar un cliente existente..
         function actualizarCliente() {
             const idCliente = document.getElementById('idClienteEditar').value;
             const cedula = document.getElementById('cedulaEditar').value.trim();
@@ -254,7 +268,7 @@
             const telefono = document.getElementById('telefonoEditar').value.trim();
             const email = document.getElementById('emailEditar').value.trim();
 
-            // Validar campos
+
             if (idCliente === '' || cedula === '' || nombre === '' || direccion === '' || telefono === '' || email === '') {
                 alert('Por favor, complete todos los campos.');
                 return;
@@ -268,7 +282,6 @@
             formData.append('telefono', telefono);
             formData.append('email', email);
 
-            // Enviar datos mediante AJAX
             fetch('actualizar_cliente.php', {
                 method: 'POST',
                 body: formData
@@ -278,24 +291,22 @@
                     alert('Cliente actualizado exitosamente.');
                     $('#modalEditarCliente').modal('hide');
                     location.reload();
-                    // Puedes recargar la tabla de clientes o realizar alguna acción adicional aquí
                 })
                 .catch(error => console.error('Error:', error));
         }
+        function actualizarClienteSimilacion() {
+            alert('Similacion...  Datos Actualizados')
+        }
 
 
-        // Función para eliminar un cliente usando AJAX
         function eliminarCliente(idCliente) {
-            if (confirm('¿Estás seguro de que deseas eliminar este cliente?')) {
-                // Realizar petición AJAX para eliminar el cliente
+            if (confirm('Simulacion.... ¿Estás seguro de que deseas eliminar este cliente?')) {
                 $.ajax({
                     url: 'eliminar_cliente.php',
                     method: 'POST',
                     data: { idCliente: idCliente },
                     success: function (response) {
-                        // Si el cliente se elimina correctamente, actualizar tabla
                         $('#cliente_' + idCliente).remove();
-                        // Puedes añadir mensajes de confirmación u otras acciones necesarias
                     },
                     error: function () {
                         alert('Error al eliminar el cliente');
@@ -304,38 +315,27 @@
             }
         }
 
-        // Evento cuando el modal se muestra
-        $('#modalCliente').on('shown.bs.modal', function () {
-            // Aquí puedes realizar acciones adicionales cuando el modal se muestra
-            // Por ejemplo, cargar datos si es para editar un cliente existente
 
-        });
 
-        // Evento cuando el modal se cierra
-        $('#modalCliente').on('hidden.bs.modal', function () {
-            // Aquí puedes realizar acciones adicionales cuando el modal se cierra
-            // Por ejemplo, limpiar el formulario
-            document.getElementById('formClienteModal').reset();
-
-        });
-
-        // Obtener la ruta actual de la URL
         var path = window.location.pathname;
-
-        // Limpiar el estado 'active' de todos los elementos
+.
         document.querySelectorAll('.nav-item').forEach(function (navItem) {
             navItem.classList.remove('active');
         });
 
-        // Basado en la ruta, asignar la clase 'active' al elemento correspondiente
+        // Basado en la ruta, asignar la clase 'active' al elemento correspondiente...
         if (path.endsWith("/cliente/cliente.php")) {
             document.getElementById("clientes").classList.add("active");
         } else if (path.endsWith("/productos/producto.php")) {
             document.getElementById("product").classList.add("active");
-        } else if (path.endsWith("/facturas.php")) {
+        } else if (path.endsWith("/facturacion/facturas.php")) {
             document.getElementById("facturas").classList.add("active");
         }
     </script>
+    <!-- Bootstrap JS y script personalizado -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>

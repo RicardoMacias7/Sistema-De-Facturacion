@@ -1,5 +1,5 @@
 <?php
-// Conexión a la base de datos (reemplaza con tus datos de conexión)
+
 $servername = "sql208.infinityfree.com";
 $username = "if0_37068684";
 $password = "QDDMXbjIIptT3u";
@@ -17,7 +17,7 @@ $nombre = $_POST['nombre'];
 $precio = $_POST['precio'];
 
 
-$sql = "INSERT INTO productos (Nombre, Precio) VALUES ('$nombre','$precio')";
+$sql = "INSERT INTO Productos (Nombre, Precio) VALUES ('$nombre','$precio')";
 
 if ($conn->query($sql) === TRUE) {
     $respuesta = array('mensaje' => 'producto creado exitosamente.');

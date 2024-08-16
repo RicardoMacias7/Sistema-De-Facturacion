@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Gestión de Facturación</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,18 +26,17 @@
                     <a class="nav-link" href="../productos/producto.php">Listado de Productos</a>
                 </li>
                 <li class="nav-item" id="facturas">
-                    <a class="nav-link" href="/facturas.php">Listado de Facturas</a>
+                    <a class="nav-link" href="../facturacion/facturas.php">Listado de Facturas</a>
                 </li>
             </ul>
         </div>
     </nav>
     <div class="container mt-4">
         <h2>Listado de Productos</h2>
-        <!-- Botón para abrir modal de agregar nuevo cliente -->
         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#modalCrearProducto">Agregar
             Producto</button>
 
-        <!-- Tabla para listar clientes -->
+    
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -48,22 +47,26 @@
             </thead>
             <tbody>
                 <?php
-                // Conexión a la base de datos (reemplaza con tus datos de conexión) -->
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "factura";
+                // $servername = "localhost";
+                // $username = "root";
+                // $password = "";
+                // $dbname = "factura";
+                $servername = "sql208.infinityfree.com";
+                $username = "if0_37068684";
+                $password = "QDDMXbjIIptT3u";
+                $dbname = "if0_37068684_facturacion";
 
-                // Crear conexión -->
+                
                 $conn = new mysqli($servername, $username, $password, $dbname);
 
-                // Verificar conexión -->
+                
                 if ($conn->connect_error) {
+                    echo "falla";
                     die("Conexión fallida: " . $conn->connect_error);
                 }
-
-                // Consulta SQL para obtener los clientes -->
-                $sql = "SELECT ID_Producto, Nombre, Precio FROM productos";
+                $conn->set_charset("utf8");
+                
+                $sql = "SELECT ID_Producto, Nombre, Precio FROM Productos";
                 $result = $conn->query($sql);
 
                 // Mostrar datos de clientes en la tabla -->
@@ -74,19 +77,17 @@
                         echo "<td>" . $row["Precio"] . "</td>";
 
                         echo '<td>
-                               <button class="btn btn-info" data-toggle="modal" data-target="#modalCliente" onclick="cargarDatosEditarProducto(' . $row["ID_Producto"] . ')">Editar</button>
-                                <button class="btn btn-danger ml-2" onclick="eliminarProducto(' . $row["ID_Producto"] . ')">Eliminar</button>
-                              </td>';
+                                <button class="btn btn-info" data-toggle="modal" data-target="#modalCliente" onclick="cargarDatosEditarProducto(' . $row["ID_Producto"] . ')">Editar</button>
+                                    <button class="btn btn-danger ml-2" onclick="eliminarProducto(' . $row["ID_Producto"] . ')">Eliminar</button>
+                                </td>';
                         echo "</tr>";
                     }
                 } else {
                     echo "<tr><td colspan='6'>No se encontraron productos</td></tr>";
                 }
 
-                // Cerrar conexión -->
                 $conn->close();
                 ?>
-                <!-- Fin del ejemplo -->
             </tbody>
         </table>
     </div>
@@ -147,7 +148,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" onclick="actualizarProducto()">Actualizar</button>
+                    <!--  <button type="button" class="btn btn-primary" onclick="actualizarProducto()">Actualizar</button>-->
+                    <button type="button" class="btn btn-primary"
+                        onclick="actualizarProductoSimulacion()">Actualizar</button>
+
                 </div>
             </div>
         </div>
@@ -161,10 +165,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        // Función para cargar datos en el modal de editar producto
+        // Función para cargar datos en el modal de editar producto..
         function cargarDatosEditarProducto(idProducto) {
-            // Puedes realizar una petición AJAX para obtener los datos del producto según su ID
-            // Aquí se simula la carga de datos (reemplaza con tu lógica real)
+            
             const url = `obtener_producto.php?id=${idProducto}`;
 
             fetch(url)
@@ -177,11 +180,11 @@
                 })
                 .catch(error => console.error('Error:', error));
 
-            // Mostrar el modal de editar producto
+            // Mostrar el modal de editar producto..
             $('#modalEditarProducto').modal('show');
         }
 
-        // Función para guardar un nuevo producto
+        // Función para guardar un nuevo producto..
         function guardarProducto() {
             const nombre = document.getElementById('nombreCrear').value.trim();
             const precio = document.getElementById('precioCrear').value.trim();
@@ -196,7 +199,7 @@
             formData.append('nombre', nombre);
             formData.append('precio', precio);
 
-            // Enviar datos mediante AJAX
+            
             fetch('guardar_producto.php', {
                 method: 'POST',
                 body: formData
@@ -206,12 +209,20 @@
                     alert('Producto creado exitosamente.');
                     $('#modalCrearProducto').modal('hide');
                     location.reload();
-                    // Puedes recargar la tabla de productos o realizar alguna acción adicional aquí
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-        // Función para actualizar un producto existente
+
+        // Función similar actualizacion...
+        function actualizarProductoSimulacion(idProducto) {
+
+            alert('Simulacion .. Producto Actulizado');
+
+
+        }
+
+        // Función para actualizar un producto ...
         function actualizarProducto() {
             const idProducto = document.getElementById('idProductoEditar').value;
             const nombre = document.getElementById('nombreEditar').value.trim();
@@ -228,7 +239,7 @@
             formData.append('nombre', nombre);
             formData.append('precio', precio);
 
-            // Enviar datos mediante AJAX
+
             fetch('actualizar_producto.php', {
                 method: 'POST',
                 body: formData
@@ -238,18 +249,18 @@
                     alert('Producto actualizado exitosamente.');
                     $('#modalEditarProducto').modal('hide');
                     location.reload();
-                    // Puedes recargar la tabla de productos o realizar alguna acción adicional aquí
+                    // Puedes recargar la tabla de productos o realizar alguna acción adicional aquí..
                 })
                 .catch(error => console.error('Error:', error));
         }
 
-        // Función para eliminar producto (lógica en tu backend)
+
         function eliminarProducto(idProducto) {
 
             // alert('Implemendtar función para eliminar producto');
 
-            if (confirm('¿Estás seguro de que deseas eliminar este Producto?')) {
-                // Realizar petición AJAX para eliminar el Producto
+            if (confirm('Simlacion.... ¿Estás seguro de que deseas eliminar este Producto?')) {
+                // Realizar petición AJAX para eliminar el Producto...
                 $.ajax({
                     url: 'eliminar_producto.php',
                     method: 'POST',
@@ -257,7 +268,7 @@
                     success: function (response) {
                         // Si el Producto se elimina correctamente, actualizar tabla
                         $('#producto_' + idProducto).remove();
-                        // Puedes añadir mensajes de confirmación u otras acciones necesarias
+                        // Puedes añadir mensajes de confirmación u otras acciones necesarias...
                     },
                     error: function () {
                         alert('Error al eliminar el Producto');
@@ -276,25 +287,25 @@
             // Cargar los datos del producto en el modal de editar
             cargarDatosEditarProducto(idProducto);
         });
-    // Obtener la ruta actual de la URL
-    var path = window.location.pathname;
+        // Obtener la ruta actual de la URL
+        var path = window.location.pathname;
 
-    // Limpiar el estado 'active' de todos los elementos
-    document.querySelectorAll('.nav-item').forEach(function(navItem) {
-        navItem.classList.remove('active');
-    });
+        // Limpiar el estado 'active' de todos los elementos
+        document.querySelectorAll('.nav-item').forEach(function (navItem) {
+            navItem.classList.remove('active');
+        });
 
-    // Basado en la ruta, asignar la clase 'active' al elemento correspondiente
-    if (path.endsWith("/cliente/cliente.php")) {
-        document.getElementById("clientes").classList.add("active");
-    } else if (path.endsWith("/productos/producto.php")) {
-        document.getElementById("product").classList.add("active");
-    } else if (path.endsWith("/facturas.php")) {
-        document.getElementById("facturas").classList.add("active");
-    }
+        // Basado en la ruta, asignar la clase 'active' al elemento correspondiente
+        if (path.endsWith("/cliente/cliente.php")) {
+            document.getElementById("clientes").classList.add("active");
+        } else if (path.endsWith("/productos/producto.php")) {
+            document.getElementById("product").classList.add("active");
+        } else if (path.endsWith("/facturacion/facturas.php")) {
+            document.getElementById("facturas").classList.add("active");
+        }
     </script>
 
-<!-- //hora -->
+    <!-- //hora -->
 </body>
 
 </html>
