@@ -1,4 +1,4 @@
-# sistemaDeFacturacion 
+#SistemaDeFacturacion 
 
 
 **Tecnologías utilizadas en el proyecto:**  
@@ -8,8 +8,11 @@
 <img src="https://img.icons8.com/color/344/javascript--v1.png" alt="JavaScript" width="50"/>
 
 
+[presentacion](https://github.com/RicardoMacias7/SistemaDeFacturacion/blob/main/gestion_factura.png)
 
 
 
 
-[**Link Sitio Web** ✌](http://facturaciondeproductos.infinityfreeapp.com/)
+
+
+[**Link Sitio Web** ](http://facturaciondeproductos.infinityfreeapp.com/)
