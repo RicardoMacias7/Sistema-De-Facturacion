@@ -1,0 +1,36 @@
+CREATE TABLE Clientes (
+    ID_Cliente INT PRIMARY KEY,
+    Cedula VARCHAR(20) UNIQUE,
+    Nombre VARCHAR(100),
+    Direccion VARCHAR(255),
+    Telefono VARCHAR(20),
+    Email VARCHAR(100),
+    Activo BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE Productos (
+    ID_Producto INT PRIMARY KEY,
+    Nombre VARCHAR(100),
+    Precio DECIMAL(10, 2)
+);
+
+CREATE TABLE Facturas (
+    ID_Factura INT PRIMARY KEY,
+    ID_Cliente INT,
+    Fecha DATE,
+    Total DECIMAL(10, 2),
+    NumeroFactura INT,
+    MetodoPago VARCHAR(50),
+    Activo BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (ID_Cliente) REFERENCES Clientes(ID_Cliente)
+);
+
+CREATE TABLE Detalles_Factura (
+    ID_Detalle INT PRIMARY KEY,
+    ID_Factura INT,
+    ID_Producto INT,
+    Cantidad INT,
+    Precio DECIMAL(10, 2),
+    FOREIGN KEY (ID_Factura) REFERENCES Facturas(ID_Factura),
+    FOREIGN KEY (ID_Producto) REFERENCES Productos(ID_Producto)
+);
